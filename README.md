@@ -5,10 +5,10 @@ The aim of this project is to recognise American Sign Language (ASL) in real tim
 
 ## Requirementss
 
-Numpy:          1.18.5 
-Matplotlib:     3.2.1
-Tensorflow:     2.2.0
-OpenCV-Python:  4.2.0.34
+Numpy:          1.18.5 __
+Matplotlib:     3.2.1 __
+Tensorflow:     2.2.0 __
+OpenCV-Python:  4.2.0.34 __
 
 See requirements.txt for complete list of packages and its version.
 
