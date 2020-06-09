@@ -25,6 +25,7 @@ import tarfile
 import numpy as np
 from six.moves import urllib
 import tensorflow as tf
+from datetime import datetime
 
 from tensorflow.python.framework import tensor_shape
 
@@ -802,10 +803,31 @@ def main(_):
         print('\n')
         print('Tensorflow : ',tf.__version__)
         print('Training Started ...')
-
-
-
         print('\n')
+
+
+        # Creating Training Log CSV file
+        nowDateTime = datetime.now()
+
+        nowYear = nowDateTime.strftime("%Y")
+        nowMonth = nowDateTime.strftime("%d")
+        nowDay = nowDateTime.strftime("%m")
+        nowHour = nowDateTime.strftime("%H")
+        nowMinute = nowDateTime.strftime("%M")
+        nowSecond = nowDateTime.strftime("%S")
+
+        filename = ("logs/log-training-" + nowYear + "-" + nowMonth + "-" + nowDay + "-" 
+                    + nowHour + "-" + nowMinute + "-" + nowSecond + ".csv"  )
+
+        # Adding Heading to csv      
+        log = [["Step", "Train accuracy (%)", "Cross entropy", "Validation accuracy (%)"]]
+        out = open(filename, 'a')
+        for row in log:
+            for column in row:
+                out.write('%s,' % column)
+            out.write('\n')
+        out.close()
+
         # Run the training for as many cycles as requested on the command line.
         for i in range(FLAGS.how_many_training_steps):
             # Get a batch of input bottleneck values, either calculated fresh every
@@ -852,8 +874,18 @@ def main(_):
                 validation_writer.add_summary(validation_summary, i)
                 print('Step: %d, Train accuracy: %.4f%%, Cross entropy: %f, Validation accuracy: %.1f%% (N=%d)' % (i,
                         train_accuracy * 100, cross_entropy_value, validation_accuracy * 100, len(validation_bottlenecks)))
+
+                # Saving Training Log to file
+                log = [[i, train_accuracy * 100, cross_entropy_value, validation_accuracy * 100]]
+                out = open(filename, 'a')
+                for row in log:
+                    for column in row:
+                        out.write('%f,' % column)
+                    out.write('\n')
+                out.close()
         print('\n')
         print('Training Completed')
+        print('Current training log is saved at: ', filename)
 
         # We've completed all our training, so run a final test evaluation on
         # some new images we haven't used before.
@@ -920,7 +952,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '--how_many_training_steps',
         type=int,
-        default=1000,
+        default=5000,
         help='How many training steps to run before ending.'
         )
     parser.add_argument(
